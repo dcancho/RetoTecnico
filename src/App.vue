@@ -16,12 +16,30 @@ import NavSidebar from './components/NavSidebar.vue';
 .app-container {
   display: flex;
   flex-direction: row;
-  height: 100vh; /* Fill the height of the viewport */
+  height: 100%; /* Fill the height of the viewport */
 }
+
 .sidebar {
   width: 20%;
+  height: auto;
+  box-sizing: border-box;
 }
 .viewport {
   width: 80%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .app-container {
+    flex-direction: column;
+  }
+  .sidebar {
+    height: 15%;
+    width: 100%;
+  }
+  .viewport {
+    height: 85%;
+    width: 100%;
+  }
 }
 </style>

@@ -1,10 +1,10 @@
 <template>
     <div class="view-wrapper">
-        <SearchBar />
+        <SearchBar class="search-container" />
         <div class="countries-container">
             <div class="countries-grid">
                 <CountryCard class="country-card" v-for="country in countries" :country="country"
-                    @click="selectedCountry = country; visible = true;" />
+                    @click="selectCountry(country)" />
             </div>
             <CountrySidebar class="country-sidebar" v-if="selectedCountry" :country="selectedCountry"
                 @update:visible="handleVisibleUpdate" />
@@ -14,49 +14,33 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import CountryCard from './../components/CountryCard.vue';
 import CountrySidebar from './../components/CountrySidebar.vue';
 import SearchBar from './../components/SearchBar.vue';
-import ICountryInfo from './../models/ICountryInfo';
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core';
+import {ICountryInfo} from './../models/ICountryInfo';
+import { useRoute, useRouter } from 'vue-router';
+import { GetICountry } from './../services/CountryService';
 
 
 
 const countries = ref<ICountryInfo[]>([]);
 
+const route = useRoute();
+const router = useRouter();
+
 onMounted(async () => {
-    const client = new ApolloClient({
-        uri: 'https://countries.trevorblades.com',
-        cache: new InMemoryCache()
-    });
-
-    const query = gql`
-    query {
-            countries {
-                name
-                capital
-                native
-                currency
-                languages {
-                  name
-                }
-                subdivisions{
-                  name
-                }
-            }
-        }
-    `
-
-    const {data} = await client.query({query});
-    countries.value = data.countries.map(country => ({
-        ...country,
-        languages: country.languages.map(language => language.name),
-        regions: country.subdivisions.map(subdivision => subdivision.name)
-    }));
+    countries.value = await GetICountry();
 })
 
+const selectCountry = (country: ICountryInfo) => {
+    selectedCountry.value = country;
+    router.push({ name: 'Country', params: { country: country.name } });
+};
 
+watch(() => route.params.country, (newCountryName) => {
+    selectedCountry.value = countries.value.find(country => country.name === newCountryName) || null;
+});
 
 const visible = ref<boolean>(false);
 const selectedCountry = ref<ICountryInfo | null>(null);
@@ -237,7 +221,6 @@ const handleVisibleUpdate = (value: boolean) => {
     align-items: center;
     padding: 1rem;
     gap: 3rem;
-    overflow-y: auto;
 }
 
 .countries-container {
@@ -246,11 +229,13 @@ const handleVisibleUpdate = (value: boolean) => {
 }
 
 .countries-grid {
+    height: 100vh;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     gap: 1rem;
+    overflow-y: scroll;
 }
 
 .country-card {
@@ -258,5 +243,10 @@ const handleVisibleUpdate = (value: boolean) => {
     padding: 1rem;
     border-radius: 0.5rem;
     box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
+}
+
+.search-container {
+    width: 100%;
+    max-width: 50rem;
 }
 </style>

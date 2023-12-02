@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ICountryInfo from './../models/ICountryInfo';
+import {ICountryInfo} from './../models/ICountryInfo';
 
 defineProps({
     country: {

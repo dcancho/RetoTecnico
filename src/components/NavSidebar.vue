@@ -1,16 +1,30 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 
 const router = useRouter();
 
 const activeState = ref([true, false, false])
+const isSmallScreen = ref(window.innerWidth < 600);
+
+const updateIsSmallScreen = () => {
+    isSmallScreen.value = window.innerWidth < 600;
+}
+
+onMounted(() => {
+  window.addEventListener('resize', updateIsSmallScreen);
+  updateIsSmallScreen();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateIsSmallScreen);
+});
 
 const items = computed(() => [
-    { label: 'Home', icon: 'pi pi-fw pi-home', path: '/', active: activeState.value[0] },
-    { label: 'Settings', icon: 'pi pi-fw pi-cog', path: '/settings', active: activeState.value[1] },
-    { label: 'About', icon: 'pi pi-fw pi-book', path: '/about', active: activeState.value[2] }
+  { label: isSmallScreen.value ? '' : 'Home', icon: 'pi pi-fw pi-home', path: '/', active: activeState.value[0] },
+  { label: isSmallScreen.value ? '' : 'Settings', icon: 'pi pi-fw pi-cog', path: '/settings', active: activeState.value[1] },
+  { label: isSmallScreen.value ? '' : 'About', icon: 'pi pi-fw pi-book', path: '/about', active: activeState.value[2] }
 ]);
 
 const navigate = (path: string, index: number) => {
@@ -43,6 +57,7 @@ const navigate = (path: string, index: number) => {
     height: 100%;
     padding: 1rem;
     background-color: var(--surface-d);
+    box-sizing: border-box;
 }
 .brand-container {
     display: flex;
@@ -67,5 +82,26 @@ const navigate = (path: string, index: number) => {
 .menu-button.active {
     background-color: #007bff;
     color: white;
+}
+
+@media (max-width: 600px) {
+    .menu-container {
+        flex-direction: row;
+        padding: 0.5rem;
+    }
+    .brand-container {
+        margin: 0;
+    }
+    .menu {
+        flex-direction: row;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+    .menu-logo {
+        width: 3rem;
+    }
+    .menu-button {
+        width: auto;
+    }
 }
 </style>
