@@ -13,7 +13,7 @@ const items = computed(() => [
     { label: 'About', icon: 'pi pi-fw pi-book', path: '/about', active: activeState.value[2] }
 ]);
 
-const navigate = (path: String, index: number) => {
+const navigate = (path: string, index: number) => {
     router.push(path);
     activeState.value = activeState.value.map((_, i) => i === index);
 }
@@ -42,7 +42,7 @@ const navigate = (path: String, index: number) => {
     flex-direction: column;
     height: 100%;
     padding: 1rem;
-    background-color: #f4f4f4;
+    background-color: var(--surface-d);
 }
 .brand-container {
     display: flex;

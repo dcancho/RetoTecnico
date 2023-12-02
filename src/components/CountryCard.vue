@@ -18,7 +18,7 @@ defineProps({
         <div class="country-info">
             <img class="country-flag" :src="country.flagUrl" />
             <div>
-                <strong class="country-name">{{ country.name }}</strong>
+                <p class="country-name title">{{ country.name }}</p>
                 <p class="country-capital">{{ country.continent }}</p>
             </div>
         </div>
@@ -58,5 +58,10 @@ defineProps({
 p {
     margin: 0;
 
+}
+
+.title {
+    font-weight: bold;
+    color: var(--primary-color);
 }
 </style>
