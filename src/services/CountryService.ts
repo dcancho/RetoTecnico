@@ -63,6 +63,16 @@ export async function GetFlagUrlPictureByCode(code: string): Promise<string> {
 }
 
 export async function GetThumbnailUrlByCountryAndCapitalName(name: string, capital: string): Promise<string> {
-  const { data } = await axios.get(`https://pixabay.com/api/?key=41029351-f616d0e6fdeee349a631b9e1a&q=${name}+city&image_type=photo`);
+  var { data } = await axios.get(`https://pixabay.com/api/?key=41029351-f616d0e6fdeee349a631b9e1a&q=${name}&image_type=photo`);
+
+  if (data.totalHits === 0) {
+    data = await axios.get(`https://pixabay.com/api/?key=41029351-f616d0e6fdeee349a631b9e1a&q=${capital}+city&image_type=photo`);
+  }
+  if (data.totalHits === 0) {
+    data = await axios.get(`https://pixabay.com/api/?key=41029351-f616d0e6fdeee349a631b9e1a&q=${capital}+city&image_type=photo`);
+  }
+  if (data.totalHits === 0) {
+    data = await axios.get(`https://pixabay.com/api/?key=41029351-f616d0e6fdeee349a631b9e1a&q=${name}+city&image_type=photo`);
+  }
   return data.hits[0].webformatURL;
 }

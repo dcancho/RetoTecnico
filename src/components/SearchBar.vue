@@ -18,12 +18,15 @@ const continents = ref([
 ]);
 
 const updateButtonLabel = () => {
-    if (window.innerWidth < 400) {
+    if (window.innerWidth < 450) {
         buttonLabel.value = '';
     } else {
         buttonLabel.value = 'Buscar';
     }
 };
+
+const emit = defineEmits(['update:searchTerm', 'update:selectedContinent']);
+
 
 onMounted(() => {
     updateButtonLabel();
@@ -34,14 +37,19 @@ onUnmounted(() => {
     window.removeEventListener('resize', updateButtonLabel);
 });
 
+watchEffect(() => {
+    emit('update:searchTerm', searchTerm.value);
+    emit('update:selectedContinent', selectedContinent.value);
+});
+
 </script>
 
 <template>
     <div class="search-container">
         <label for="search-input">País</label>
         <div class="input-container">
-            <InputText class="search-input" placeholder="Escribe el país que deseas ver" :model-value="searchTerm" />
-            <Dropdown class="continent-select" v-model="selectedContinent" :options="continents" placeholder="Continent"></Dropdown>
+            <InputText class="search-input" placeholder="Escribe el país que deseas ver" v-model="searchTerm" />
+            <Dropdown class="continent-select" showClear v-model="selectedContinent" :options="continents" placeholder="Continent"></Dropdown>
             <Button class="search-button" icon="pi pi-search" :label="buttonLabel">
             </Button>
         </div>
@@ -51,6 +59,7 @@ onUnmounted(() => {
 <style scoped>
 .input-container {
     display: flex;
+    flex-wrap: wrap;
 }
 
 .search-input {
@@ -62,6 +71,6 @@ onUnmounted(() => {
 }
 
 .continent-select {
-    width: 8rem;
+    width: 9rem;
 }
 </style>

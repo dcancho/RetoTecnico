@@ -1,9 +1,11 @@
 <template>
     <div class="view-wrapper">
-        <SearchBar class="search-container" />
+        <SearchBar class="search-container"
+        @update:search-term="searchTerm = $event" 
+        @update:selected-continent="selectedContinent = $event"/>
         <div class="countries-container">
             <div class="countries-grid">
-                <CountryCard class="country-card" v-for="country in countries" :country="country"
+                <CountryCard class="country-card" v-for="country in filteredCountries" :country="country"
                     @click="selectCountry(country)" />
             </div>
             <CountrySidebar class="country-sidebar" v-if="selectedCountry" :country="selectedCountry"
@@ -14,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import CountryCard from './../components/CountryCard.vue';
 import CountrySidebar from './../components/CountrySidebar.vue';
 import SearchBar from './../components/SearchBar.vue';
@@ -23,9 +25,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { GetICountry } from './../services/CountryService';
 
 
-
 const countries = ref<ICountryInfo[]>([]);
-
 const route = useRoute();
 const router = useRouter();
 
@@ -44,164 +44,16 @@ watch(() => route.params.country, (newCountryName) => {
 
 const visible = ref<boolean>(false);
 const selectedCountry = ref<ICountryInfo | null>(null);
-/*
-const countries: ICountryInfo[] = [
-    {
-        flagUrl: "https://flagcdn.com/w320/co.png",
-        thumbnailUrl: "https://th.bing.com/th/id/OIP.th6rmQr7LVkqyLr8wr1oPgHaFC?w=730&h=496&rs=1&pid=ImgDetMain",
-        name: "Colombia",
-        continent: "South America",
-        capital: "Bogotá",
-        languages: ["Spanish"],
-        population: 48759958,
-        currency: "COP",
-        regions: ["Cauca", "Cundinamarca", "Valle del Cauca"],
-    },
-    {
-        flagUrl: "https://flagcdn.com/w320/pe.png",
-        thumbnailUrl: "https://th.bing.com/th/id/R.8d8921f7453ca8df8b287e06794dd4ee?rik=iw2x%2bN49i3MlEg&riu=http%3a%2f%2fvivedetusrentas.com.pe%2fwp-content%2fuploads%2f2020%2f03%2fPanor%c3%a1mica-costa-verde.png&ehk=iOLXjOiA8uyOCdNEAr19pEZmYnDBmaxC661UWqWnIEY%3d&risl=&pid=ImgRaw&r=0",
-        name: "Peru",
-        continent: "South America",
-        capital: "Lima",
-        languages: ["Spanish"],
-        population: 48759958,
-        currency: "PEN",
-        regions: ["Ancash", "Cajamarca", "Lima"],
-    },
-    {
-        flagUrl: "https://flagcdn.com/w320/es.png",
-        thumbnailUrl: "https://th.bing.com/th/id/R.8d8921f7453ca8df8b287e06794dd4ee?rik=iw2x%2bN49i3MlEg&riu=http%3a%2f%2fvivedetusrentas.com.pe%2fwp-content%2fuploads%2f2020%2f03%2fPanor%c3%a1mica-costa-verde.png&ehk=iOLXjOiA8uyOCdNEAr19pEZmYnDBmaxC661UWqWnIEY%3d&risl=&pid=ImgRaw&r=0",
-        name: "Spain",
-        continent: "Europe",
-        capital: "Lima",
-        languages: ["Spanish"],
-        population: 48759958,
-        currency: "PEN",
-        regions: ["Ancash", "Cajamarca", "Lima"],
-    },
-    {
-        flagUrl: "https://flagcdn.com/w320/pe.png",
-        thumbnailUrl: "https://th.bing.com/th/id/R.8d8921f7453ca8df8b287e06794dd4ee?rik=iw2x%2bN49i3MlEg&riu=http%3a%2f%2fvivedetusrentas.com.pe%2fwp-content%2fuploads%2f2020%2f03%2fPanor%c3%a1mica-costa-verde.png&ehk=iOLXjOiA8uyOCdNEAr19pEZmYnDBmaxC661UWqWnIEY%3d&risl=&pid=ImgRaw&r=0",
-        name: "Peru",
-        continent: "South America",
-        capital: "Lima",
-        languages: ["Spanish"],
-        population: 48759958,
-        currency: "PEN",
-        regions: ["Ancash", "Cajamarca", "Lima"],
-    },
-    {
-        flagUrl: "https://flagcdn.com/w320/pe.png",
-        thumbnailUrl: "https://th.bing.com/th/id/R.8d8921f7453ca8df8b287e06794dd4ee?rik=iw2x%2bN49i3MlEg&riu=http%3a%2f%2fvivedetusrentas.com.pe%2fwp-content%2fuploads%2f2020%2f03%2fPanor%c3%a1mica-costa-verde.png&ehk=iOLXjOiA8uyOCdNEAr19pEZmYnDBmaxC661UWqWnIEY%3d&risl=&pid=ImgRaw&r=0",
-        name: "Peru",
-        continent: "South America",
-        capital: "Lima",
-        languages: ["Spanish"],
-        population: 48759958,
-        currency: "PEN",
-        regions: ["Ancash", "Cajamarca", "Lima"],
-    },
-    {
-        flagUrl: "https://flagcdn.com/w320/pe.png",
-        thumbnailUrl: "https://th.bing.com/th/id/R.8d8921f7453ca8df8b287e06794dd4ee?rik=iw2x%2bN49i3MlEg&riu=http%3a%2f%2fvivedetusrentas.com.pe%2fwp-content%2fuploads%2f2020%2f03%2fPanor%c3%a1mica-costa-verde.png&ehk=iOLXjOiA8uyOCdNEAr19pEZmYnDBmaxC661UWqWnIEY%3d&risl=&pid=ImgRaw&r=0",
-        name: "Peru",
-        continent: "South America",
-        capital: "Lima",
-        languages: ["Spanish"],
-        population: 48759958,
-        currency: "PEN",
-        regions: ["Ancash", "Cajamarca", "Lima"],
-    },
-    {
-        flagUrl: "https://flagcdn.com/w320/pe.png",
-        thumbnailUrl: "https://th.bing.com/th/id/R.8d8921f7453ca8df8b287e06794dd4ee?rik=iw2x%2bN49i3MlEg&riu=http%3a%2f%2fvivedetusrentas.com.pe%2fwp-content%2fuploads%2f2020%2f03%2fPanor%c3%a1mica-costa-verde.png&ehk=iOLXjOiA8uyOCdNEAr19pEZmYnDBmaxC661UWqWnIEY%3d&risl=&pid=ImgRaw&r=0",
-        name: "Peru",
-        continent: "South America",
-        capital: "Lima",
-        languages: ["Spanish"],
-        population: 48759958,
-        currency: "PEN",
-        regions: ["Ancash", "Cajamarca", "Lima"],
-    },
-    {
-        flagUrl: "https://flagcdn.com/w320/pe.png",
-        thumbnailUrl: "https://th.bing.com/th/id/R.8d8921f7453ca8df8b287e06794dd4ee?rik=iw2x%2bN49i3MlEg&riu=http%3a%2f%2fvivedetusrentas.com.pe%2fwp-content%2fuploads%2f2020%2f03%2fPanor%c3%a1mica-costa-verde.png&ehk=iOLXjOiA8uyOCdNEAr19pEZmYnDBmaxC661UWqWnIEY%3d&risl=&pid=ImgRaw&r=0",
-        name: "Peru",
-        continent: "South America",
-        capital: "Lima",
-        languages: ["Spanish"],
-        population: 48759958,
-        currency: "PEN",
-        regions: ["Ancash", "Cajamarca", "Lima"],
-    },
-    {
-        flagUrl: "https://flagcdn.com/w320/pe.png",
-        thumbnailUrl: "https://th.bing.com/th/id/R.8d8921f7453ca8df8b287e06794dd4ee?rik=iw2x%2bN49i3MlEg&riu=http%3a%2f%2fvivedetusrentas.com.pe%2fwp-content%2fuploads%2f2020%2f03%2fPanor%c3%a1mica-costa-verde.png&ehk=iOLXjOiA8uyOCdNEAr19pEZmYnDBmaxC661UWqWnIEY%3d&risl=&pid=ImgRaw&r=0",
-        name: "Peru",
-        continent: "South America",
-        capital: "Lima",
-        languages: ["Spanish"],
-        population: 48759958,
-        currency: "PEN",
-        regions: ["Ancash", "Cajamarca", "Lima"],
-    },
-    {
-        flagUrl: "https://flagcdn.com/w320/pe.png",
-        thumbnailUrl: "https://th.bing.com/th/id/R.8d8921f7453ca8df8b287e06794dd4ee?rik=iw2x%2bN49i3MlEg&riu=http%3a%2f%2fvivedetusrentas.com.pe%2fwp-content%2fuploads%2f2020%2f03%2fPanor%c3%a1mica-costa-verde.png&ehk=iOLXjOiA8uyOCdNEAr19pEZmYnDBmaxC661UWqWnIEY%3d&risl=&pid=ImgRaw&r=0",
-        name: "Peru",
-        continent: "South America",
-        capital: "Lima",
-        languages: ["Spanish"],
-        population: 48759958,
-        currency: "PEN",
-        regions: ["Ancash", "Cajamarca", "Lima"],
-    },
-    {
-        flagUrl: "https://flagcdn.com/w320/pe.png",
-        thumbnailUrl: "https://th.bing.com/th/id/R.8d8921f7453ca8df8b287e06794dd4ee?rik=iw2x%2bN49i3MlEg&riu=http%3a%2f%2fvivedetusrentas.com.pe%2fwp-content%2fuploads%2f2020%2f03%2fPanor%c3%a1mica-costa-verde.png&ehk=iOLXjOiA8uyOCdNEAr19pEZmYnDBmaxC661UWqWnIEY%3d&risl=&pid=ImgRaw&r=0",
-        name: "Peru",
-        continent: "South America",
-        capital: "Lima",
-        languages: ["Spanish"],
-        population: 48759958,
-        currency: "PEN",
-        regions: ["Ancash", "Cajamarca", "Lima"],
-    },
-    {
-        flagUrl: "https://flagcdn.com/w320/pe.png",
-        thumbnailUrl: "https://th.bing.com/th/id/R.8d8921f7453ca8df8b287e06794dd4ee?rik=iw2x%2bN49i3MlEg&riu=http%3a%2f%2fvivedetusrentas.com.pe%2fwp-content%2fuploads%2f2020%2f03%2fPanor%c3%a1mica-costa-verde.png&ehk=iOLXjOiA8uyOCdNEAr19pEZmYnDBmaxC661UWqWnIEY%3d&risl=&pid=ImgRaw&r=0",
-        name: "Peru",
-        continent: "South America",
-        capital: "Lima",
-        languages: ["Spanish"],
-        population: 48759958,
-        currency: "PEN",
-        regions: ["Ancash", "Cajamarca", "Lima"],
-    },
-    {
-        flagUrl: "https://flagcdn.com/w320/pe.png",
-        thumbnailUrl: "https://th.bing.com/th/id/R.8d8921f7453ca8df8b287e06794dd4ee?rik=iw2x%2bN49i3MlEg&riu=http%3a%2f%2fvivedetusrentas.com.pe%2fwp-content%2fuploads%2f2020%2f03%2fPanor%c3%a1mica-costa-verde.png&ehk=iOLXjOiA8uyOCdNEAr19pEZmYnDBmaxC661UWqWnIEY%3d&risl=&pid=ImgRaw&r=0",
-        name: "Peru",
-        continent: "South America",
-        capital: "Lima",
-        languages: ["Spanish"],
-        population: 48759958,
-        currency: "PEN",
-        regions: ["Ancash", "Cajamarca", "Lima"],
-    },
-    {
-        flagUrl: "https://flagcdn.com/w320/pe.png",
-        thumbnailUrl: "https://th.bing.com/th/id/R.8d8921f7453ca8df8b287e06794dd4ee?rik=iw2x%2bN49i3MlEg&riu=http%3a%2f%2fvivedetusrentas.com.pe%2fwp-content%2fuploads%2f2020%2f03%2fPanor%c3%a1mica-costa-verde.png&ehk=iOLXjOiA8uyOCdNEAr19pEZmYnDBmaxC661UWqWnIEY%3d&risl=&pid=ImgRaw&r=0",
-        name: "Peru",
-        continent: "South America",
-        capital: "Lima",
-        languages: ["Spanish"],
-        population: 48759958,
-        currency: "PEN",
-        regions: ["Ancash", "Cajamarca", "Lima"],
-    }];
+const selectedContinent = ref<string | null>('');
+const searchTerm = ref<string>('');
 
-    */
+const filteredCountries = computed(() => {
+    return countries.value.filter((country) => {
+        const searchTermMatch = country.name.toLowerCase().includes(searchTerm.value.toLowerCase());
+        const continentMatch = selectedContinent.value === null || selectedContinent.value === '' || country.continent === selectedContinent.value;
+        return searchTermMatch && continentMatch;
+    });
+});
 
 const handleVisibleUpdate = (value: boolean) => {
     visible.value = value;

@@ -4,6 +4,9 @@ import { ICountryInfo } from './../models/ICountryInfo';
 import { GetPopulationByCode } from '../services/CountryService';
 import Button from 'primevue/button';
 import ListBox from 'primevue/listbox';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const props = defineProps({
   country: {
@@ -18,6 +21,7 @@ const emit = defineEmits(['update:visible']);
 
 const emitClick = () => {
   emit('update:visible', false);
+  router.push('/');
 }
 
 onMounted(() => {

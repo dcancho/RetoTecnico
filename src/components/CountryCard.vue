@@ -20,7 +20,6 @@ onMounted(() => {
             if (entry.isIntersecting) {
                 isVisible.value = true;
                 observer.disconnect();
-                console.log(localCountry.value.code);
                 const thumbnailResponse = await GetThumbnailUrlByCountryAndCapitalName(localCountry.value.name, localCountry.value.capital);
                 const flagResponse = await GetFlagUrlPictureByCode(localCountry.value.code);
                 if (thumbnailResponse || flagResponse) {
