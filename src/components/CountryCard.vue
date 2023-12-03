@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, toRef } from 'vue';
+import { ref, onMounted, toRef, computed } from 'vue';
 import { ICountryInfo } from './../models/ICountryInfo';
 import { GetFlagUrlPictureByCode, GetThumbnailUrlByCountryAndCapitalName } from '../services/CountryService';
 
@@ -7,12 +7,23 @@ const props = defineProps({
     country: {
         type: Object as () => ICountryInfo,
         required: true
+    },
+    selectedCountry : {
+        type: Object as () => ICountryInfo | null,
+        required: false
     }
 });
 
 const isVisible = ref(false);
+const isSelected = computed(() => props.selectedCountry?.name === props.country.name);
 const card = ref(null);
 const localCountry = toRef(props, 'country');
+
+const emit = defineEmits(['select']);
+
+const selectCard = () => {
+    emit('select', localCountry.value);
+};
 
 onMounted(() => {
     const observer = new IntersectionObserver(
@@ -46,7 +57,10 @@ onMounted(() => {
 
 
 <template>
-    <div class="country-card" ref="card">
+    <div class="country-card"
+    :class="{'selected': isSelected}"
+    ref="card"
+    @click="selectCard">
         <div v-if="country.areImagesLoaded" class="country-thumbnail"
             :style="{ backgroundImage: `url(${localCountry.thumbnailUrl})` }">
         </div>
@@ -65,6 +79,15 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.selected {
+    background-color: var(--primary-color);
+    color: white;   
+}
+
+.selected .title {
+    color: white;
+}
+
 .country-card {
     display: flex;
     flex-direction: column;
@@ -72,7 +95,6 @@ onMounted(() => {
     padding: 1rem;
     border-radius: 0.5rem;
     box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
-    background-color: white;
     max-height: 16rem;
 }
 

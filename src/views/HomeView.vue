@@ -5,8 +5,11 @@
         @update:selected-continent="selectedContinent = $event"/>
         <div class="countries-container">
             <div class="countries-grid">
-                <CountryCard class="country-card" v-for="country in filteredCountries" :country="country"
-                    @click="selectCountry(country)" />
+                <CountryCard class="country-card" 
+                v-for="country in filteredCountries" 
+                :country="country"
+                :selected-country="selectedCountry"
+                @select="selectCountry" />
             </div>
             <CountrySidebar class="country-sidebar" v-if="selectedCountry" :country="selectedCountry"
                 @update:visible="handleVisibleUpdate" />
@@ -24,8 +27,11 @@ import {ICountryInfo} from './../models/ICountryInfo';
 import { useRoute, useRouter } from 'vue-router';
 import { GetICountry } from './../services/CountryService';
 
-
 const countries = ref<ICountryInfo[]>([]);
+const visible = ref<boolean>(false);
+const selectedCountry = ref<ICountryInfo | null>(null);
+const selectedContinent = ref<string | null>('');
+const searchTerm = ref<string>('');
 const route = useRoute();
 const router = useRouter();
 
@@ -41,11 +47,6 @@ const selectCountry = (country: ICountryInfo) => {
 watch(() => route.params.country, (newCountryName) => {
     selectedCountry.value = countries.value.find(country => country.name === newCountryName) || null;
 });
-
-const visible = ref<boolean>(false);
-const selectedCountry = ref<ICountryInfo | null>(null);
-const selectedContinent = ref<string | null>('');
-const searchTerm = ref<string>('');
 
 const filteredCountries = computed(() => {
     return countries.value.filter((country) => {
