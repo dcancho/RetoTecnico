@@ -1,21 +1,20 @@
 <script setup lang="ts">
 import InputText from 'primevue/inputtext';
-import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
+import OverlayPanel from 'primevue/overlaypanel';
 import { ref, onMounted, onUnmounted, watchEffect } from 'vue';
+import ContinentFilter from './ContinentFilter.vue';
 
+const op = ref();
 const searchTerm = ref('');
 const buttonLabel = ref('Buscar');
 const selectedContinent = ref('');
-const continents = ref([
-    'Africa',
-    'Antarctica',
-    'Asia',
-    'Europe',
-    'North America',
-    'Oceania',
-    'South America'
-]);
+
+
+const toggle = (event: Event) => {
+    console.log('Clicked toggle')
+    op.value.toggle(event);
+};
 
 const updateButtonLabel = () => {
     if (window.innerWidth < 450) {
@@ -27,6 +26,11 @@ const updateButtonLabel = () => {
 
 const emit = defineEmits(['update:searchTerm', 'update:selectedContinent']);
 
+
+const handleContinentSelection = (continentName: string) => {
+    selectedContinent.value = continentName;
+    op.value.hide();
+};
 
 onMounted(() => {
     updateButtonLabel();
@@ -48,11 +52,19 @@ watchEffect(() => {
     <div class="search-container">
         <label for="search-input">País</label>
         <div class="input-container">
-            <InputText class="search-input" placeholder="Escribe el país que deseas ver" v-model="searchTerm" />
-            <Dropdown class="continent-select" showClear v-model="selectedContinent" :options="continents" placeholder="Continent"></Dropdown>
+            <InputText class="search-input" 
+            placeholder="Escribe el país que deseas ver" 
+            v-model="searchTerm" 
+            @click="toggle"/>
+            <OverlayPanel ref="op">
+                <ContinentFilter @update:selectedContinent="handleContinentSelection"></ContinentFilter>
+            </OverlayPanel>
             <Button class="search-button" icon="pi pi-search" :label="buttonLabel">
             </Button>
         </div>
+        <small v-if="selectedContinent !== null && selectedContinent !== ''">
+            Selected continent: {{ selectedContinent }}
+        </small>
     </div>
 </template>
 
