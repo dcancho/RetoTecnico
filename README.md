@@ -2,7 +2,7 @@
 
 Enlace a deployment en Vercel: https://reto-tecnico-eight.vercel.app/
 
-Ver branch version/ para ver versión de la aplicación con filtro de continentes como dropdown.
+Ver branch version/dropdown-filter para ver versión de la aplicación con filtro de continentes como dropdown.
 
 ## Tecnologías usadas  
 * Vue.js 3 (Composition Api)
