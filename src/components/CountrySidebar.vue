@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { defineProps, onMounted, ref, } from 'vue';
 import { ICountryInfo } from './../models/ICountryInfo';
+import { GetPopulationByCode } from '../services/CountryService';
 import Button from 'primevue/button';
 import ListBox from 'primevue/listbox';
 
@@ -13,7 +14,6 @@ const props = defineProps({
 
 const population = ref(0);
 
-
 const emit = defineEmits(['update:visible']);
 
 const emitClick = () => {
@@ -21,14 +21,13 @@ const emitClick = () => {
 }
 
 onMounted(() => {
-  fetch(`https://restcountries.com/v3.1/alpha?codes=${props.country?.code}`)
-    .then(response => response.json())
-    .then(data => {
-      population.value = data[0].population;
+  const countryCode = props.country?.code;
+  if (countryCode) {
+    GetPopulationByCode(countryCode).then((result) => {
+      population.value = result;
     });
-})
-
-
+  }
+});
 </script>
 
 <template>
@@ -38,20 +37,22 @@ onMounted(() => {
     </div>
     <div class="content-container">
       <img class="thumbnail-img" :src="country?.thumbnailUrl" :alt="country?.name" />
-      <div class="header-container">
-        <img class="flag-img" :src="country?.flagUrl" :alt="country?.name" />
-        <div>
-          <h2 class="title">{{ country?.name }}</h2>
-          <p>{{ country?.continent }}</p>
+      <div>
+        <div class="header-container">
+          <img class="flag-img" :src="country?.flagUrl" :alt="country?.name" />
+          <div>
+            <h2 class="title">{{ country?.name }}</h2>
+            <p>{{ country?.continent }}</p>
+          </div>
         </div>
-      </div>
-      <div class="country-info">
-        <p><span class="title">Capital:</span> {{ country?.capital }}</p>
-        <p><span class="title">Population:</span> {{ population }}</p>
-        <p><span class="title">Currency:</span> {{ country?.currency }}</p>
-        <p><span class="title">Languages:</span> {{ country?.languages.join(', ') }}</p>
-        <p><span class="title">Regions:</span></p>
-        <ListBox :options="country?.subdivisions" />
+        <div class="country-info">
+          <p><span class="title">Capital:</span> {{ country?.capital }}</p>
+          <p><span class="title">Population:</span> {{ population }}</p>
+          <p><span class="title">Currency:</span> {{ country?.currency }}</p>
+          <p><span class="title">Languages:</span> {{ country?.languages.join(', ') }}</p>
+          <div>          <p><span class="title">Regions:</span></p>
+          <ListBox :options="country?.subdivisions" /></div>
+        </div>
       </div>
     </div>
   </div>
@@ -63,14 +64,14 @@ onMounted(() => {
   background-color: var(--surface-a);
   border-radius: 0.5rem;
   box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
 .thumbnail-img {
-  height: 15rem;
-  width: 20rem;
+  width: 100%;
   object-fit: cover;
 }
 
@@ -84,6 +85,7 @@ onMounted(() => {
   flex-direction: row;
   align-items: center;
   gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 p,
@@ -106,6 +108,15 @@ h2 {
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  overflow-y: scroll;
+  gap: 1rem;
+  max-height: 18rem;
 }
+
+@media(max-width: 900px) {
+  .thumbnail-img {
+    width: 100%;
+  }
+}
+
 </style>

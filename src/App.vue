@@ -29,7 +29,7 @@ import NavSidebar from './components/NavSidebar.vue';
   box-sizing: border-box;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 650px) {
   .app-container {
     flex-direction: column;
   }

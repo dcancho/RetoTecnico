@@ -84,7 +84,7 @@ const navigate = (path: string, index: number) => {
     color: white;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 650px) {
     .menu-container {
         flex-direction: row;
         padding: 0.5rem;

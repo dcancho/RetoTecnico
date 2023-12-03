@@ -213,29 +213,35 @@ const handleVisibleUpdate = (value: boolean) => {
 <style scoped>
 .country-sidebar {
     height: min-content;
+    min-width: 20rem;
 }
 
 .view-wrapper {
     display: flex;
+    height: 100vh;
     flex-direction: column;
     align-items: center;
     padding: 1rem;
-    gap: 3rem;
+    gap: 2rem;
+    box-sizing: border-box;
 }
 
 .countries-container {
     display: flex;
+    overflow: hidden;
     flex-direction: row;
+    box-sizing: border-box;
+    flex-grow: 1;
 }
 
 .countries-grid {
-    height: 100vh;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     gap: 1rem;
     overflow-y: scroll;
+    box-sizing: border-box;
 }
 
 .country-card {
@@ -248,5 +254,25 @@ const handleVisibleUpdate = (value: boolean) => {
 .search-container {
     width: 100%;
     max-width: 50rem;
+    flex-grow: 0;
+}
+
+@media (max-width: 900px) {
+    .countries-container {
+        flex-direction: column-reverse;
+        justify-content: center;
+    }
+
+    .country-sidebar {
+        flex-grow: 0;
+        min-height: 25rem;
+        overflow-y: scroll;
+        width: 20rem;
+        align-self: center;
+    }
+
+    .countries-grid {
+        flex-grow: 1;
+    }
 }
 </style>

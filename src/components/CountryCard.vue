@@ -1,22 +1,62 @@
 <script setup lang="ts">
-import {ICountryInfo} from './../models/ICountryInfo';
+import { ref, onMounted, toRef } from 'vue';
+import { ICountryInfo } from './../models/ICountryInfo';
+import { GetFlagUrlPictureByCode, GetThumbnailUrlByCountryAndCapitalName } from '../services/CountryService';
 
-defineProps({
+const props = defineProps({
     country: {
         type: Object as () => ICountryInfo,
         required: true
     }
 });
 
+const isVisible = ref(false);
+const card = ref(null);
+const localCountry = toRef(props, 'country');
+
+onMounted(() => {
+    const observer = new IntersectionObserver(
+        async ([entry]) => {
+            if (entry.isIntersecting) {
+                isVisible.value = true;
+                observer.disconnect();
+                console.log(localCountry.value.code);
+                const thumbnailResponse = await GetThumbnailUrlByCountryAndCapitalName(localCountry.value.name, localCountry.value.capital);
+                const flagResponse = await GetFlagUrlPictureByCode(localCountry.value.code);
+                if (thumbnailResponse || flagResponse) {
+                    localCountry.value.areImagesLoaded = true;
+                }
+                localCountry.value.flagUrl = flagResponse;
+                localCountry.value.thumbnailUrl = thumbnailResponse;
+            }
+        },
+        {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        }
+    );
+    if (card.value) {
+        observer.observe(card.value);
+    }
+});
+
+
+
 </script>
 
 
 <template>
-    <div class="country-card">
-        <div class="country-thumbnail" :style="{ backgroundImage: `url(${country.thumbnailUrl})` }">
+    <div class="country-card" ref="card">
+        <div v-if="country.areImagesLoaded" class="country-thumbnail"
+            :style="{ backgroundImage: `url(${localCountry.thumbnailUrl})` }">
+        </div>
+        <div v-else class="country-thumbnail not-loaded">
+            <img class="loading-icon" src="./../assets/loading-icon.jpg" />
         </div>
         <div class="country-info">
-            <img class="country-flag" :src="country.flagUrl" />
+            <img v-if="country.areImagesLoaded" class="country-flag" :src="localCountry.flagUrl" />
+            <img v-else class="country-flag not-loaded loading-icon" src="./../assets/loading-icon.jpg" />
             <div>
                 <p class="country-name title">{{ country.name }}</p>
                 <p class="country-capital">{{ country.continent }}</p>
@@ -35,6 +75,33 @@ defineProps({
     box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
     background-color: white;
 
+}
+
+.loading-icon {
+    width: 25%;
+    object-fit: cover;
+    animation: rotation 3s infinite linear;
+}
+
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.not-loaded {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.country-flag.not-loaded {
+    width: 2rem;
+    height: 2rem;
 }
 
 .country-thumbnail {

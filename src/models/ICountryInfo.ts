@@ -10,6 +10,7 @@ export interface ICountryInfo {
     population: number;
     currency: string;
     subdivisions: Subdivision[];
+    areImagesLoaded: boolean;
 }
 
 export interface Language {
