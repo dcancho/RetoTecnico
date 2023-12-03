@@ -14,7 +14,6 @@
             <CountrySidebar class="country-sidebar" v-if="selectedCountry" :country="selectedCountry"
                 @update:visible="handleVisibleUpdate" />
         </div>
-
     </div>
 </template>
 
@@ -27,6 +26,8 @@ import {ICountryInfo} from './../models/ICountryInfo';
 import { useRoute, useRouter } from 'vue-router';
 import { GetICountry } from './../services/CountryService';
 
+// Data
+
 const countries = ref<ICountryInfo[]>([]);
 const visible = ref<boolean>(false);
 const selectedCountry = ref<ICountryInfo | null>(null);
@@ -35,18 +36,7 @@ const searchTerm = ref<string>('');
 const route = useRoute();
 const router = useRouter();
 
-onMounted(async () => {
-    countries.value = await GetICountry();
-})
-
-const selectCountry = (country: ICountryInfo) => {
-    selectedCountry.value = country;
-    router.push({ name: 'Country', params: { country: country.name } });
-};
-
-watch(() => route.params.country, (newCountryName) => {
-    selectedCountry.value = countries.value.find(country => country.name === newCountryName) || null;
-});
+// Computed
 
 const filteredCountries = computed(() => {
     return countries.value.filter((country) => {
@@ -56,10 +46,27 @@ const filteredCountries = computed(() => {
     });
 });
 
+// Methods
+
 const handleVisibleUpdate = (value: boolean) => {
     visible.value = value;
     selectedCountry.value = null;
 }
+
+const selectCountry = (country: ICountryInfo) => {
+    selectedCountry.value = country;
+    router.push({ name: 'Country', params: { country: country.name } });
+};
+
+// Lifecycle hooks
+
+onMounted(async () => {
+    countries.value = await GetICountry();
+})
+
+watch(() => route.params.country, (newCountryName) => {
+    selectedCountry.value = countries.value.find(country => country.name === newCountryName) || null;
+});
 
 </script>
 

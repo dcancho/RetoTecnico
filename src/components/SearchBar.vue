@@ -5,11 +5,14 @@ import OverlayPanel from 'primevue/overlaypanel';
 import { ref, onMounted, onUnmounted, watchEffect } from 'vue';
 import ContinentFilter from './ContinentFilter.vue';
 
+// Data
+
 const op = ref();
 const searchTerm = ref('');
 const buttonLabel = ref('Buscar');
 const selectedContinent = ref('');
 
+// Methods
 
 const toggle = (event: Event) => {
     console.log('Clicked toggle')
@@ -26,11 +29,12 @@ const updateButtonLabel = () => {
 
 const emit = defineEmits(['update:searchTerm', 'update:selectedContinent']);
 
-
 const handleContinentSelection = (continentName: string) => {
     selectedContinent.value = continentName;
     op.value.hide();
 };
+
+// Lifecycle hooks
 
 onMounted(() => {
     updateButtonLabel();

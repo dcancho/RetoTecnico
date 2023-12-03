@@ -3,14 +3,29 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 
-const router = useRouter();
+// Data
 
+const router = useRouter();
 const activeState = ref([true, false, false])
 const isSmallScreen = ref(window.innerWidth < 600);
+const items = computed(() => [
+  { label: isSmallScreen.value ? '' : 'Home', icon: 'pi pi-fw pi-home', path: '/', active: activeState.value[0] },
+  { label: isSmallScreen.value ? '' : 'Settings', icon: 'pi pi-fw pi-cog', path: '/settings', active: activeState.value[1] },
+  { label: isSmallScreen.value ? '' : 'About', icon: 'pi pi-fw pi-book', path: '/about', active: activeState.value[2] }
+]);
+
+// Methods
 
 const updateIsSmallScreen = () => {
     isSmallScreen.value = window.innerWidth < 600;
 }
+
+const navigate = (path: string, index: number) => {
+    router.push(path);
+    activeState.value = activeState.value.map((_, i) => i === index);
+}
+
+// Lifecycle hooks
 
 onMounted(() => {
   window.addEventListener('resize', updateIsSmallScreen);
@@ -20,17 +35,6 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', updateIsSmallScreen);
 });
-
-const items = computed(() => [
-  { label: isSmallScreen.value ? '' : 'Home', icon: 'pi pi-fw pi-home', path: '/', active: activeState.value[0] },
-  { label: isSmallScreen.value ? '' : 'Settings', icon: 'pi pi-fw pi-cog', path: '/settings', active: activeState.value[1] },
-  { label: isSmallScreen.value ? '' : 'About', icon: 'pi pi-fw pi-book', path: '/about', active: activeState.value[2] }
-]);
-
-const navigate = (path: string, index: number) => {
-    router.push(path);
-    activeState.value = activeState.value.map((_, i) => i === index);
-}
 </script>
 
 <template>

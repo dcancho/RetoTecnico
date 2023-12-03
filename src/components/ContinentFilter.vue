@@ -20,14 +20,7 @@
 <script setup lang="ts">
 import { defineEmits, ref } from 'vue';
 
-const emit = defineEmits(['update:selectedContinent']);
-const selectedContinent = ref('');
-
-const emitSelect = (continentName: string) => {
-    selectedContinent.value = continentName;
-    emit('update:selectedContinent', selectedContinent.value);
-}
-
+// Data
 const continents = [
     {
         name: 'Africa',
@@ -58,6 +51,16 @@ const continents = [
         imagePath: './south_america.png'
     }
 ]
+
+// Methods
+
+const emit = defineEmits(['update:selectedContinent']);
+const selectedContinent = ref('');
+
+const emitSelect = (continentName: string) => {
+    selectedContinent.value = continentName;
+    emit('update:selectedContinent', selectedContinent.value);
+}
 
 </script>
 

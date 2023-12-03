@@ -9,7 +9,8 @@ Ver branch version/dropdown-filter para ver versión de la aplicación con filtr
 * PrimeVue
 * PrimeIcons
 * Axios
-* ApolloClient
+* Apollo
+* GraphQL
 * Vite
 * TypeScript
 

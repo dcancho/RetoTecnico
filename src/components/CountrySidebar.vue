@@ -6,6 +6,8 @@ import Button from 'primevue/button';
 import ListBox from 'primevue/listbox';
 import { useRouter } from 'vue-router';
 
+// Data
+
 const router = useRouter();
 
 const props = defineProps({
@@ -17,12 +19,16 @@ const props = defineProps({
 
 const population = ref(0);
 
+// Methods
+
 const emit = defineEmits(['update:visible']);
 
 const emitClick = () => {
   emit('update:visible', false);
   router.push('/');
 }
+
+// Lifecycle hooks
 
 onMounted(() => {
   const countryCode = props.country?.code;

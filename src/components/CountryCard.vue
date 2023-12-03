@@ -14,16 +14,22 @@ const props = defineProps({
     }
 });
 
+// Data
+
 const isVisible = ref(false);
 const isSelected = computed(() => props.selectedCountry?.name === props.country.name);
 const card = ref(null);
 const localCountry = toRef(props, 'country');
+
+// Methods
 
 const emit = defineEmits(['select']);
 
 const selectCard = () => {
     emit('select', localCountry.value);
 };
+
+// Lifecycle hooks
 
 onMounted(() => {
     const observer = new IntersectionObserver(
@@ -50,8 +56,6 @@ onMounted(() => {
         observer.observe(card.value);
     }
 });
-
-
 
 </script>
 
